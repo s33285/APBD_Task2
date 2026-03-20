@@ -64,7 +64,22 @@ namespace APBD_TASK2.Services
             }
         }
 
+        public List<Rental> GetUserActiveRent(int userId)
+        {
+            return _db.Rentals
+                .Where(r => !r.IsReturned && r.DueDate < DateTime.Now)
+                .ToList();
+        }
 
+        public string GenerateReport()
+        {
+            return $"Users: {_db.Users.Count}, Equipment: {_db.EquipmentItems.Count}, Rentals: {_db.Rentals.Count}";
+        }
+
+        private int GetMaxRentals(User user)
+        {
+            return user.Type == UserType.Student ? 2 : 5;
+        }
 
     }
 }

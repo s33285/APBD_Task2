@@ -34,9 +34,37 @@ namespace APBD_TASK2.Services
 
             equipment.Status = EquipmentStatus.Rented;
             _db.Rentals.Add(rental);
-        
+
+            if (user == null || equipmet == null)
+                throw new Exception("User or Equipment not found");
+
+            if (equipment.Status != EquipmentStatus.Available)
+                throw new Exception("Equipment is not available");
+
+            var activeRentals = _db.Rentals
+                .Count(r => r.User.Id == userId && !r.IsReturned);
+            if (activeRentals >= GetMaxRentals(user))
+                throw new Exception("User exceeded rental limit");
         
         }
+
+        public ReturnedEquipment(int equipment)
+        { 
+            var rental = _db.Rentals
+                 .FirstOrDefault(r => r.Equipment.Id == equipmentId && !r.IsReturned);
+            if (rental == null) throw new Exception("Active rental not found");
+
+            rental.ReturnDate = DateTime.Now;
+            rental.Equipment.Status = EquipmentStatus.Available;
+
+            if (rental.ReturnedDate > rental.DueDate)
+            { 
+                var lateDays = (rental.ReturnDate.Value - rental.DueDate).Days;
+                rental.Penalty = lateDays * 5;
+            }
+        }
+
+
 
     }
 }

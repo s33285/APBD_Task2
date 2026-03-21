@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using APBD_TASK2.Models;
 namespace APBD_TASK2.Database
 {
     public class Singleton

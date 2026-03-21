@@ -11,7 +11,8 @@ namespace APBD_TASK2.Models
         public DateTime AddedDate { get; set; }
         public EquipmentStatus Status { get; set; }
 
-        protected Equipment(string name, string description, DateTime addedDate) {
+        protected Equipment(string name, string description)
+        {
             Id = _nextId++;
             Name = name;
             Description = description;
@@ -19,6 +20,6 @@ namespace APBD_TASK2.Models
             Status = EquipmentStatus.Available;
         }
 
-    
+
     }
 }

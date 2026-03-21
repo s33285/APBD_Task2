@@ -7,35 +7,34 @@ namespace APBD_TASK2.Services
 {
     public class RentalService : IRentalService
     {
-        private readonly Singletopn _db = Singleton.Instance;
+        private readonly Singleton _db = Singleton.Instance;
 
-        public AddUser(User user)
-        { 
+        public void AddUser(User user)
+        {
             _db.Users.Add(user);
         }
 
-        public AddEquipment(Equipment equipment)
-        { 
+        public void AddEquipment(Equipment equipment)
+        {
             _db.EquipmentItems.Add(equipment);
         }
 
-        public List<Equipment> GetAllAvailableEquipment() {
-            return _db.EquipmentItems
-                   .Where(equals => e.Status == EquipmentStatus.Available)
-                   .ToList();
+        public List<Equipment> GetAllEquipment()
+        {
+            return _db.EquipmentItems;
         }
 
-        public RentEquipment(int userId, int equipment, int days)
-        { 
-            var user = _db.User.FirstOrDefault(u => u.Id == userId);
-            var equipmet = _db.EquipmentItems.FirstOrDefault(e => e.Id == equipmentId);
 
-           var rental = new Rental(user, equipment, days);
+        public List<Equipment> GetAllAvailableEquipment() {
+            return _db.EquipmentItems.Where(e => e.Status == EquipmentStatus.Available).ToList();
+        }
 
-            equipment.Status = EquipmentStatus.Rented;
-            _db.Rentals.Add(rental);
+        public void RentEquipment(int userId, int equipmentId, int days)
+        {
+            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+            var equipment = _db.EquipmentItems.FirstOrDefault(e => e.Id == equipmentId);
 
-            if (user == null || equipmet == null)
+            if (user == null || equipment == null)
                 throw new Exception("User or Equipment not found");
 
             if (equipment.Status != EquipmentStatus.Available)
@@ -43,33 +42,49 @@ namespace APBD_TASK2.Services
 
             var activeRentals = _db.Rentals
                 .Count(r => r.User.Id == userId && !r.IsReturned);
+
             if (activeRentals >= GetMaxRentals(user))
                 throw new Exception("User exceeded rental limit");
-        
+
+            var rental = new Rental(user, equipment, days);
+
+            equipment.Status = EquipmentStatus.Rented;
+            _db.Rentals.Add(rental);
         }
 
-        public ReturnedEquipment(int equipment)
-        { 
+        public void ReturnEquipment(int equipmentId)
+        {
             var rental = _db.Rentals
-                 .FirstOrDefault(r => r.Equipment.Id == equipmentId && !r.IsReturned);
-            if (rental == null) throw new Exception("Active rental not found");
+                .FirstOrDefault(r => r.Equipment.Id == equipmentId && !r.IsReturned);
+
+            if (rental == null)
+                throw new Exception("Active rental not found");
 
             rental.ReturnDate = DateTime.Now;
+
             rental.Equipment.Status = EquipmentStatus.Available;
 
-            if (rental.ReturnedDate > rental.DueDate)
-            { 
+            if (rental.ReturnDate > rental.DueDate)
+            {
                 var lateDays = (rental.ReturnDate.Value - rental.DueDate).Days;
                 rental.Penalty = lateDays * 5;
             }
         }
 
-        public List<Rental> GetUserActiveRent(int userId)
+        public List<Rental> GetUserActiveRentals(int userId)
+        {
+            return _db.Rentals
+                .Where(r => r.User.Id == userId && !r.IsReturned)
+                .ToList();
+        }
+
+        public List<Rental> GetOverdueRentals()
         {
             return _db.Rentals
                 .Where(r => !r.IsReturned && r.DueDate < DateTime.Now)
                 .ToList();
         }
+
 
         public string GenerateReport()
         {

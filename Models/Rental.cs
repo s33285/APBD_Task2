@@ -9,8 +9,9 @@ namespace APBD_TASK2.Models
         public DateTime RentalDate { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
+        public bool IsReturned => ReturnDate.HasValue;
         public decimal Penalty { get; set; }
-        public bool isReturned => ReturnDate.HasValue;
+
 
         public Rental(User user, Equipment equipment, int days)
         {

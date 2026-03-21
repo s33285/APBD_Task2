@@ -96,5 +96,13 @@ namespace APBD_TASK2.Services
             return user.Type == UserType.Student ? 2 : 5;
         }
 
+
+        public void MarkEquipmentUnavailable(int equipmentId)
+        {
+            var equipment = _db.EquipmentItems.FirstOrDefault(e => e.Id == equipmentId);
+            if (equipment == null) throw new Exception("Equipment not found");
+            equipment.Status = EquipmentStatus.Unavailable;
+
+        }
     }
 }

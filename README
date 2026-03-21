@@ -1,0 +1,23 @@
+The application simulates basic equipment rental service.
+There are functions like adding users, adding equipment, seeing available equipment, rent equipment and return it(main functions)
+The ui is done in console.
+I orginized code in folders: "Model" contains basic data classes, like Equipment
+"Services"  contains main buisness logic, like renting, returning and limiting
+"Database" has Singleton(storage for users, equipment and etc.)
+and Program.cs for console output.
+Structured code is easy to understand and helps avoiding mixing responsibilities.
+
+Business rules included:
+Students can have max 2 active rentals
+Employees can have max 5
+Equipment marked as Unavailable cannot be rented
+Late returns generate a penalty (5 per day)
+Overdue rentals are detected automatically
+All rules are kept in one place (RentalService) so they are easy to change.
+
+Cohesion - each class in the project has one clear job, and all of its fields and methods relate to that job.
+In Equipment classes only store info about equipment, User stores only user data and etc.
+
+Coupling - in Program.cs it only talks to the IRentalService interface, not to the database or models directly
+
+Made by s33285 :)
